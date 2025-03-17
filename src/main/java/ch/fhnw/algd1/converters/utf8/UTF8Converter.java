@@ -9,8 +9,26 @@ package ch.fhnw.algd1.converters.utf8;
 public class UTF8Converter {
 	public static byte[] codePointToUTF(int x) {
 		byte[] b = null;
-		// TODO allocate b in the right size (depending on x) and fill it with the
-		// UTF-8 encoding of code point x. b[0] shall contain the first byte.
+		char[] chars = Integer.toBinaryString(x).toCharArray();
+		if (x <= 0b111_1111) {
+			b = new byte[1];
+			b[0] = (byte) x;
+		} else if (x < (2 << 10) ) {
+			b = new byte[2];
+			b[0] = (byte) ((x >> 6) | 0b1100_0000);
+			b[1] = (byte) ((x & 0b000_0011_1111) | 0b1000_0000);
+		} else if (x < (2 << 15)) {
+			b = new byte[3];
+			b[0] = (byte) ((x >> 12) | 0b1110_0000);
+			b[1] = (byte) ((x >> 6)& 0b000_0011_1111 | 0b1000_0000);
+			b[2] = (byte) ((x & 0b000_0011_1111) | 0b1000_0000);
+		} else if (x < (2 << 20)) {
+			b = new byte[4];
+			b[0] = (byte) ((x >> 18) | 0b1111_0000);
+			b[1] = (byte) ((x >> 12)& 0b000_0011_1111 | 0b1000_0000);
+			b[2] = (byte) ((x >> 6)& 0b000_0011_1111 | 0b1000_0000);
+			b[3] = (byte) ((x & 0b000_0011_1111) | 0b1000_0000);
+		}
 		return b;
 	}
 
